@@ -14,7 +14,6 @@ sudo -u server bash << EOF
 cd ~
 
 # Обновляем систему и устанавливаем зависимости
-yes | sudo apt update && sudo apt upgrade -y
 yes | sudo apt install lib32gcc-s1 -y
 
 # Скачиваем и распаковываем SteamCMD
