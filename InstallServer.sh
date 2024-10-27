@@ -2,20 +2,20 @@
 
 # Создаем пользователя server
 useradd -m server
-passwd server
+echo "server:Ivan_van2008" | chpasswd
 usermod -aG sudo server
 usermod -s /bin/bash server
 
 # Перезапускаем SSH для применения изменений
 systemctl restart sshd
 
-# Переходим к пользователю server
-su server
+# Выполняем команды от имени пользователя server
+sudo -u server bash << EOF
+cd ~
 
 # Обновляем систему и устанавливаем зависимости
-cd
 sudo apt update && sudo apt upgrade -y
-sudo apt install lib32gcc-s1
+sudo apt install lib32gcc-s1 -y
 
 # Скачиваем и распаковываем SteamCMD
 mkdir ~/steamcmd && cd ~/steamcmd
@@ -26,17 +26,18 @@ tar xvfz steamcmd_linux.tar.gz
 STEAMEXE=steamcmd ./steamcmd.sh +login anonymous +force_install_dir /home/server/server +app_update 730 +exit
 
 # Копируем Steam Client для CS2
-cd ~/ && mkdir .steam && cd .steam && mkdir sdk64; cp ~/steamcmd/linux64/steamclient.so ~/.steam/sdk64
+mkdir -p ~/.steam/sdk64
+cp ~/steamcmd/linux64/steamclient.so ~/.steam/sdk64
 
 # Создаем скрипт для запуска CS2
-cd
-touch start.sh && nano start.sh
-echo "#!/bin/bash" >> start.sh
+cd ~
+echo "#!/bin/bash" > start.sh
 echo "~/server/game/bin/linuxsteamrt64/cs2 -port 27015 -game csgo -dedicated -console -maxplayers 8 +game_type 0 +game_mode 0 +map de_inferno" >> start.sh
-sudo chmod +x start.sh
+chmod +x start.sh
 
 # Настройка конфигурации сервера
-nano server/game/csgo/cfg/server.cfg
+nano ~/server/game/csgo/cfg/server.cfg
 
 # Запускаем сервер CS2
-sh start.sh
+./start.sh
+EOF
