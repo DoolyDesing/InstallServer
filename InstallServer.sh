@@ -16,8 +16,8 @@ systemctl restart sshd
 sudo -u server bash << EOF
 export DEBIAN_FRONTEND=noninteractive
 
-# Обновляем систему и устанавливаем зависимости
-sudo apt update && sudo apt -y upgrade
+# Обновляем систему и устанавливаем зависимости с подавлением запросов
+sudo apt update && sudo apt -y upgrade -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 sudo apt install -y lib32gcc-s1
 
 # Скачиваем и распаковываем SteamCMD
