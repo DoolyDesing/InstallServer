@@ -6,16 +6,19 @@ echo "server:Ivan_van2008" | chpasswd
 usermod -aG sudo server
 usermod -s /bin/bash server
 
+# Добавляем пользователя server в sudoers без запроса пароля
+echo "server ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/server
+
 # Перезапускаем SSH для применения изменений
 systemctl restart sshd
 
 # Выполняем команды от имени пользователя server
 sudo -u server bash << EOF
-cd ~
+export DEBIAN_FRONTEND=noninteractive
 
 # Обновляем систему и устанавливаем зависимости
-sudo apt update && sudo apt upgrade -y
-sudo apt install lib32gcc-s1 -y
+sudo apt update && sudo apt -y upgrade
+sudo apt install -y lib32gcc-s1
 
 # Скачиваем и распаковываем SteamCMD
 mkdir ~/steamcmd && cd ~/steamcmd
