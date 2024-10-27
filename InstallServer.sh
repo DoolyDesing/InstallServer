@@ -16,6 +16,9 @@ systemctl restart sshd
 sudo -u server bash << EOF
 export DEBIAN_FRONTEND=noninteractive
 
+# Настраиваем автоматический выбор конфигураций для обновления
+echo 'linux-image-$(uname -r) linux-image/restart-needed boolean false' | sudo debconf-set-selections
+
 # Обновляем систему и устанавливаем зависимости с подавлением запросов
 sudo apt update && sudo apt -y upgrade -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 sudo apt install -y lib32gcc-s1
