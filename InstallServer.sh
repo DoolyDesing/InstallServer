@@ -6,22 +6,16 @@ echo "server:Ivan_van2008" | chpasswd
 usermod -aG sudo server
 usermod -s /bin/bash server
 
-# Добавляем пользователя server в sudoers без запроса пароля
-echo "server ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/server
-
 # Перезапускаем SSH для применения изменений
 systemctl restart sshd
 
 # Выполняем команды от имени пользователя server
 sudo -u server bash << EOF
-export DEBIAN_FRONTEND=noninteractive
+cd ~
 
-# Настраиваем автоматический выбор конфигураций для обновления
-echo 'linux-image-$(uname -r) linux-image/restart-needed boolean false' | sudo debconf-set-selections
-
-# Обновляем систему и устанавливаем зависимости с подавлением запросов
-sudo apt update && sudo apt -y upgrade -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
-sudo apt install -y lib32gcc-s1
+# Обновляем систему и устанавливаем зависимости
+yes | sudo apt update && sudo apt upgrade -y
+yes | sudo apt install lib32gcc-s1 -y
 
 # Скачиваем и распаковываем SteamCMD
 mkdir ~/steamcmd && cd ~/steamcmd
@@ -41,8 +35,8 @@ echo "#!/bin/bash" > start.sh
 echo "~/server/game/bin/linuxsteamrt64/cs2 -port 27015 -game csgo -dedicated -console -maxplayers 8 +game_type 0 +game_mode 0 +map de_inferno" >> start.sh
 chmod +x start.sh
 
-# Настройка конфигурации сервера
-nano ~/server/game/csgo/cfg/server.cfg
+# Настройка конфигурации сервера (если требуется ручная настройка)
+#nano ~/server/game/csgo/cfg/server.cfg
 
 # Запускаем сервер CS2
 ./start.sh
